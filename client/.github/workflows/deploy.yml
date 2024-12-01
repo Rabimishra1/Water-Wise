@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]  # Trigger on push to main branch
+  workflow_dispatch:    # Allow manual triggering
+
+permissions:
+  contents: write       # Allows the workflow to write to the repository
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies 📦
+        run: npm ci
+
+      - name: Build Project 🏗️
+        run: npm run build
+        env:
+          CI: false  # Prevents warnings from stopping the build
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build  # Folder with your built React app
+          branch: gh-pages  # Branch to deploy to
